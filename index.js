@@ -4,7 +4,8 @@ require('./keepalive')
 
 const client = new Discord.Client({
   fetchAllMembers: true,
-  disableMentions: 'everyone'
+  disableMentions: 'everyone',
+  fetchAllMembers: true
 })
 
 client.defaultColor = `#00FFFF`
@@ -21,7 +22,8 @@ var commandFiles = fs.readdirSync(`${__dirname}/commands`).filter(file => file.e
 
 client.on('ready', () => {
   console.log(`I'm ready! ${client.user.tag}! ${client.guilds.cache.size} guilds and ${client.users.cache.size} users cached!`)
-
+  
+  console.log(client.user.id)
   client.user.setActivity(` ${client.guilds.cache.size} servers!`, {type: 'WATCHING'})
   setInterval(()=>{
     var number = Math.random(Math.floor() * 4) + 1
@@ -51,6 +53,10 @@ client.on('ready', () => {
       example: command.example
     })
   })
+
+  Array.from(client.guilds.cache).forEach((g)=>{
+    console.log(`${g[1].name} - ${g[1].owner.id}`)
+  })
 })
 
 client.on('warn', (e)=>{
@@ -75,6 +81,21 @@ client.on('shardReady', (id)=>{
 
 client.on('rateLimit', (data)=>{
   console.log(`I got ratelimited! ${data.path} ${data.method} ${data.limit} ${data.timeout} ${data.timeDifference} ${data.route}`)
+})
+
+client.on('guildCreate', (guild)=>{
+  var channel = Array.from(guild.channels.cache)[1]
+
+  var e = new Discord.MessageEmbed()
+    e.setTitle(`Bread!`)
+    e.setURL(`https://discord.com/oauth2/authorize?client_id=749674433123188908&scope=bot&permissions=470117456`)
+    e.setDescription(`Hello, I'm your bot for gaming. My name is Bread and I was created by the Null Development Team! I have a lot of gaming commands. You can use me to play Simon Says, Rock Paper Scissors and more. Invite me now by click the embed link! You can vote for me on top.gg to unlock some perks.`)
+
+    e.setColor(client.defaultColor)
+    e.setThumbnail(client.user.displayAvatarURL())
+    e.setFooter(`You can also vote for me on top.gg!`)
+
+  channel.send(e)
 })
 
 client.on('message', (message)=>{
