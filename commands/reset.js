@@ -6,15 +6,15 @@ module.exports = {
   description: 'Resets everything. Remove all the roles from people that have it.',
   run: async (client, message) => {
     if (!message.guild.member(client.user.id).hasPermission('MANAGE_ROLES')) {
-      return message.channel.send(`i need manage roles perms for this to work. give me manage roles perms then try again.`)
+      return message.channel.send(client.errors.incorrectPermissions([`MANAGE_ROLES`]))
     }
 
     if(!message.guild.member(client.user.id).hasPermission('MANAGE_CHANNELS')){
-      return message.channel.send(`i need manage channels perms for this to work. give me manage roles perms then try again.`)
+      return message.channel.send(client.errors.incorrectPermissions([`MANAGE_CHANNELS`]))
     }
 
     if(client.ss[message.guild.id]){
-      return message.channel.send('please stop the current game then try again')
+      return message.channel.send(client.errors.customError(`There is a game running right now. Please stop that game and then try again.`))
     }
 
     var m = await message.channel.send(`Checking some things...`

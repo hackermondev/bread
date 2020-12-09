@@ -6,16 +6,16 @@ module.exports = {
   description: 'End the simon says game',
   run: async (client, message)=>{
     if(!message.guild.member(client.user.id).hasPermission('MANAGE_ROLES')){
-      return message.channel.send(`i need manage roles perms for this to work. give me manage roles perms then try again.`)
+      return message.channel.send(client.errors.incorrectPermissions(['MANAGE_ROLES']))
     }
 
     if(!client.ss[message.guild.id]){
-      return message.channel.send(`you don't have a game running`)
+      return message.channel.send(client.errors.customError(`You don't have a game of Simon Says running right now.`))
     }
 
 
-    if(!message.member.hasPermission('ADMINISTRATOR') && message.member.roles.has(client.ss[message.guild.id].roles.controller.id)){
-      return message.channel.send('only controller or people with admin can do this!')
+    if(!message.member.hasPermission('ADMINISTRATOR') && message.member.roles.cache.has(client.ss[message.guild.id].roles.controller.id)){
+      return message.channel.send(client.errors.invalidRole(roles.controller.id))
     }
     
     var m = await message.channel.send(`Ending simon says...`)

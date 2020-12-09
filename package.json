@@ -11,10 +11,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
+    "discord-giveaways": "^4.2.1",
     "discord.js": "^12.3.1",
     "express": "^4.17.1",
     "fetch": "^1.1.0",
+    "mongodb": "^3.6.2",
     "n": "^6.7.0",
-    "node-fetch": "^2.6.0"
+    "node-fetch": "^2.6.0",
+    "statcord.js": "^3.0.8"
   }
 }

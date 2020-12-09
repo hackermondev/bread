@@ -5,21 +5,21 @@ module.exports = {
   topic: 'games',
   description: 'Start a simon says game',
   run: async (client, message)=>{
-    if(!message.guild.member(client.user.id).hasPermission('MANAGE_ROLES')){
-      return message.channel.send(`i need manage roles perms for this to work. give me manage roles perms then try again.`)
+    if(!message.guild.member(client.user.id).hasPermission('MANAGE_ROLES') || !message.guild.member(client.user.id).hasPermission('MANAGE_CHANNELS')){
+      return message.channel.send(client.errors.incorrectPermissions([`MANAGE_CHANNELS`, `MANAGE_ROLES`]))
     }
 
     if(!message.guild.member(client.user.id).hasPermission('MANAGE_CHANNELS')){
-      return message.channel.send(`i need manage channels perms for this to work. give me manage roles perms then try again.`)
+      return message.channel.send(client.errors.incorrectPermissions(`MANAGE_MESSAGES`))
     }
 
     if(client.ss[message.guild.id]){
-      return message.channel.send(`i don't support more than one game in a server, yet.....`)
+      return message.channel.send(client.errors.customError(`You can't start more than one game in a server. Please end the other game first.`))
       return
     }
 
     if(!message.member.hasPermission('MANAGE_MESSAGES')){
-      return message.channel.send('you need manage messages role to do this')
+      return message.channel.send(client.errors.invalidPermissions(`MANAGE_MESSAGES`))
     }
     
     var m = await message.channel.send(`Loading some stuff....`)
@@ -79,14 +79,24 @@ module.exports = {
       var u = message.guild.member(user)
 
       if(!u){
-        return message.channel.send(`ok so since you didn't give me a valid user i can't start the game (oof). please use the command again`)
+        return message.channel.send(client.errors.userNotFound())
       }
 
       u.roles.add(roles.controller).catch((err)=>{
-        message.channel.send(`i couldn't give them the role.`)
+        message.channel.send(client.errors.customError(`i couldn't give them the role.`))
       })
 
-      u.roles.add(roles.player)
+      if(message.guild.roles.cache.get(roles.player.id).members.size == 0){
+        return message.channel.send(`I didn't start the game because no one has the \`Player\` role. Give the people playing the role and try again.`)
+      }
+
+      // u.roles.add(roles.player)
+
+      await client.changeLeaderboard(message.guild, u.id, { gamesControlled: '+1' })
+
+      roles.player.members.array().forEach(async (m)=>{
+        await client.changeLeaderboard(message.guild, m.id, { gamesPlayed: '+1' })
+      })
 
       message.channel.send(`<@${u.id}>, you've been chose for simon! let the game begin!`)
 

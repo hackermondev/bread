@@ -5,12 +5,12 @@ module.exports = {
   run: (client, message) => {
 
     if(client.rps[message.author.id]){
-      return message.channel.send('you are already in a rps game')
+      return message.channel.send(client.errors.customError('You can\'t be in two RPS games.'))
     }
 
     var user = message.content.split(' ')[1]
     if (!user) {
-      return message.channel.send('ping someone to challenge')
+      return message.channel.send(client.errors.customError('Please mention someone to challenge.'))
     }
 
     user = user.replace('<@', '').replace('>', '').replace('!', '')
@@ -18,19 +18,19 @@ module.exports = {
     var u = message.guild.member(user)
 
     if (!u) {
-      return message.channel.send('invalid user')
+      return message.channel.send(client.errors.userNotFound())
     }
     
-     if(client.rps[u.id]){
-      return message.channel.send(`${u.displayName} is already in a rps game`)
+    if(client.rps[u.id]){
+      return message.channel.send(client.errors.customError(`${u.displayName} is already in a rps game`))
     }
 
     if(client.users.cache.get(u.id).bot){
-      return message.channel.send('you cannot rps a bot')
+      return message.channel.send(client.error.userNotFound())
     }
 
     if(u.id == message.author.id){
-      return message.channel.send('you cannot rps yourself')
+      return message.channel.send(client.error.userNotFound())
     }
 
     message.channel.send(`<@${u.id}>, ${message.author.tag} has challenged you to a RPS game! Say \`accept\` to accept and anything else to not.`)
@@ -40,7 +40,7 @@ module.exports = {
       time: 120000,
       errors: ['time']
     }).catch((err) => {
-      message.channel.send(`<@${u.id}>, You were too slow to response. A RPS game has not started.`)
+      message.channel.send(`<@${u.id}>, You were too slow to respond. An RPS game has not started.`)
     })
       .then(async (c) => {
         if(c == undefined){

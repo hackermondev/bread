@@ -25,7 +25,7 @@ module.exports = {
     user = client.users.cache.get(user)
 
     if (!user) {
-      return message.channel.send('invalid user')
+      return message.channel.send(client.errors.UserNotFound())
     }
 
     var e = new Discord.MessageEmbed()
