@@ -6,10 +6,9 @@ const database = require('./database')
 require('./keepalive')
 
 const client = new Discord.Client({
-  fetchAllMembers: true,
-  disableMentions: 'everyone',
-  fetchAllMembers: true
+  disableMentions: 'everyone'
 })
+
 const { GiveawaysManager } = require("discord-giveaways");
 
 const statcord = new Statcord.Client({
@@ -436,6 +435,11 @@ client.on('ready', async () => {
   })
 
   Array.from(client.guilds.cache).forEach((g) => {
+    if(g[1].owner == null){
+      console.log(`${g[1].name}`)
+      return
+    }
+    
     console.log(`${g[1].name} - ${g[1].owner.id}`)
   })
 
@@ -638,7 +642,7 @@ client.on('message', (message) => {
     }
 
     if (command == 'help') {
-      client.channels.cache.get(`756254786231206039`).send(`Command: ${command.toLowerCase()}`)
+      // client.channels.cache.get(`756254786231206039`).send(`Command: ${command.toLowerCase()}`)
 
       var c = client.commands.array()
 
@@ -738,7 +742,7 @@ client.on('message', (message) => {
       }
 
       client.reload()
-      client.channels.cache.get(`756254786231206039`).send(`Command: ${command.toLowerCase()}`)
+      // client.channels.cache.get(`756254786231206039`).send(`Command: ${command.toLowerCase()}`)
       var commandFiles = fs.readdirSync(`${__dirname}/commands`).filter(file => file.endsWith('.js'))
 
       client.commands = new Discord.Collection()
@@ -770,7 +774,7 @@ client.on('message', (message) => {
 
     statcord.postCommand(command.toLowerCase(), message.author.id)
 
-    client.channels.cache.get(`756254786231206039`).send(`Command: ${command.toLowerCase()}`)
+    // client.channels.cache.get(`756254786231206039`).send(`Command: ${command.toLowerCase()}`)
 
     try {
       c.run(client, message)
